@@ -1,0 +1,149 @@
+{
+    "data": {
+        "microdata": [],
+        "rdfa": [
+            {
+                "#location": "-1:-1",
+                "http://dev.twitter.com/cards/markup#creator": [{
+                    "#location": "10:53",
+                    "@value": "@maxxeight"
+                }],
+                "@type": ["twitter"],
+                "http://dev.twitter.com/cards/markup#site": [{
+                    "#location": "9:50",
+                    "@value": "@maxxeight"
+                }],
+                "http://dev.twitter.com/cards/markup#card": [{
+                    "#location": "8:59",
+                    "@value": "summary_large_image"
+                }]
+            },
+            {
+                "#location": "-1:-1",
+                "http://ogp.me/ns#title": [{
+                    "#location": "11:130",
+                    "@value": "TechnicalSEO.com | Info, Examples & Tools"
+                }],
+                "@type": ["og"],
+                "#error": [{
+                    "#message": "ERROR:  <b>http://ogp.me/ns#type, http://ogp.me/ns#url<\/b> field missing or empty",
+                    "#location": "-1:-1",
+                    "#error_code": "missing_empty",
+                    "#type": "error"
+                }],
+                "http://ogp.me/ns#description": [{
+                    "#location": "12:253",
+                    "@value": "Brought to you by Merkle, a set of technical SEO topics with examples and tools, to help you make your website technically search engine friendly."
+                }],
+                "http://ogp.me/ns#image": [{
+                    "#location": "13:232",
+                    "@value": "https://technicalseo.com/resources/img/thumbnail.php?url=https://technicalseo.com/"
+                }]
+            },
+            {"#resource": ["https://www.technicalseo.com/"]},
+            {"#resource": ["https://technicalseo.com/amp.html"]},
+            {"http://www.w3.org/1999/xhtml/vocab#role": [{
+                "#location": "71:77",
+                "@id": "http://www.w3.org/1999/xhtml/vocab#search"
+            }]}
+        ],
+        "microformat": [],
+        "json-ld": [
+            {
+                "#location": "121:15",
+                "http://schema.org/name": [{
+                    "#location": "123:11",
+                    "@value": "TechnicalSEO.com"
+                }],
+                "http://schema.org/description": [{
+                    "#location": "125:18",
+                    "@value": "Brought to you by Merkle, a set of technical SEO topics with examples and tools, to help you make your website technically search engine friendly."
+                }],
+                "http://schema.org/contributor": [
+                    {
+                        "#location": "148:30",
+                        "@type": ["http://schema.org/Person"],
+                        "@id": "https://technicalseo.com/about/#kylabecker"
+                    },
+                    {
+                        "#location": "149:30",
+                        "@type": ["http://schema.org/Person"],
+                        "@id": "https://technicalseo.com/about/#alexissanders"
+                    }
+                ],
+                "http://schema.org/about": [{
+                    "#location": "126:12",
+                    "@value": "Search Engine Optimization"
+                }],
+                "http://schema.org/publisher": [{
+                    "#location": "134:11",
+                    "http://schema.org/name": [{
+                        "#location": "135:12",
+                        "@value": "Merkle Inc."
+                    }],
+                    "http://schema.org/logo": [{
+                        "#location": "137:12",
+                        "@id": "https://www.merkleinc.com/sites/default/files/merkle-logo.png"
+                    }],
+                    "http://schema.org/sameAs": [
+                        {
+                            "#location": "140:5",
+                            "@id": "https://www.facebook.com/merkleinc/"
+                        },
+                        {
+                            "#location": "141:5",
+                            "@id": "https://twitter.com/merklecrm"
+                        },
+                        {
+                            "#location": "142:5",
+                            "@id": "https://plus.google.com/+Merkleinc"
+                        },
+                        {
+                            "#location": "143:5",
+                            "@id": "https://www.linkedin.com/company/merkle"
+                        }
+                    ],
+                    "@type": ["http://schema.org/Organization"],
+                    "http://schema.org/email": [{
+                        "#location": "138:13",
+                        "@value": "RKGinfo@merkleinc.com"
+                    }],
+                    "@id": "https://www.technicalseo.com/#merkleinc",
+                    "http://schema.org/url": [{
+                        "#location": "136:11",
+                        "@id": "https://www.merkleinc.com/"
+                    }]
+                }],
+                "@type": ["http://schema.org/WebSite"],
+                "http://schema.org/potentialAction": [{
+                    "#location": "127:22",
+                    "http://schema.org/target": [{
+                        "#location": "129:14",
+                        "@value": "https://technicalseo.com/search/?q={search_term_string}"
+                    }],
+                    "@type": ["http://schema.org/SearchAction"],
+                    "http://schema.org/query-input": [{
+                        "#location": "130:19",
+                        "@value": "required name=search_term_string"
+                    }]
+                }],
+                "http://schema.org/creator": [{
+                    "#location": "146:40",
+                    "@type": ["http://schema.org/Person"],
+                    "@id": "https://technicalseo.com/about/#maxprin"
+                }],
+                "http://schema.org/url": [{
+                    "#location": "124:10",
+                    "@id": "https://technicalseo.com/"
+                }]
+            },
+            {"#error": [{
+                "#message": "ERROR:  your JSON-LD label cannot be parsed. Check the document for syntactical errors: <b>&quot;<span style=\"text-decoration: underline;\">&quot;<\/span><\/b>",
+                "#location": "-1:-1",
+                "#error_code": "json_parsing",
+                "#type": "error"
+            }]}
+        ]
+    },
+    "id": null
+}
