@@ -125,7 +125,9 @@
 		}
 </style>
 
-<?php include $_SERVER['DOCUMENT_ROOT']."/seo-tools/nav.html" ?>
+<?php
+//include $_SERVER['DOCUMENT_ROOT']."/seo-tools/nav.html"
+?>
 
 		<ol class="nav navbar-nav navbar-right desktop breadcrumb-custom">
 			<li class="yah"><i class="fa fa-map-marker"></i><i>You are here:</i></li>
@@ -147,7 +149,7 @@
 <div class="row">
 	<div class="col-md-8">
 		<label><i class="fa fa-hand-o-right"></i>URLs:</label>
-		<textarea id="URLs" name="URLs" class="form-control" rows="1" placeholder="One per line | 50 URLs max." style="resize:vertical"></textarea>
+		<textarea id="URLs" name="URLs" class="form-control" rows="1" placeholder="One per line | 50 URLs max." style="resize:vertical">https://www.technicalseo.com</textarea>
 	</div>
 	<div class="col-md-2">
 		<label>&nbsp;</label><br>
@@ -198,6 +200,9 @@
 </div>
 <br>
 <hr>
+<div id="test_div">
+ERRORS
+</div>
 <!-- //COMMENTS
 <div id="disqus_thread"></div>
 <script>disqus();setCurrent()</script> -->
@@ -205,114 +210,120 @@
 <!--outputting excel -->
 <script src="/resources/tools/table-excel.js"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-	ajax_loading = false;
-    $("#url_submit").click(function(){ if(!ajax_loading) {
-		ajax_loading = true;
-		Array.prototype.unique = function() {
-		  return this.filter(function (value, index, self) {
-			return self.indexOf(value) === index;
-		  });
-		}
-		var URLs = $('#URLs').val().split('\n').filter(Boolean).unique().slice(0, 50); //split by line break, remove empty lines, removing duplicates (.unique), limits 50 urls
 
-		$("#table0").addClass("hide"); //jquery styling
-		$("#maintable").html("");
-		$("#mobileFriendlyURLsTable").html("");
-		$("#NotMobileFriendlyURLsTable").html("");
-		$('.modal').remove();
-		$(".btn-red-orange").removeClass("disabled");
-		$("#loading span:nth-child(2)").text("0");
-		$("#loading span:nth-child(3)").text(URLs.length);
-		$("#loading").removeClass('hide');
+window.onload = function(){
+ console.log("Window Loaded");
+ ajax_loading = false;
+	 $("#url_submit").click(function(){
+console.log('clicked');
+		 if(!ajax_loading) {
+	 ajax_loading = true;
+	 Array.prototype.unique = function() {
+		 return this.filter(function (value, index, self) {
+		 return self.indexOf(value) === index;
+		 });
+	 }
+	 var URLs = $('#URLs').val().split('\n').filter(Boolean).unique().slice(0, 50); //split by line break, remove empty lines, removing duplicates (.unique), limits 50 urls
 
-		for (var i = 0, len = URLs.length; i < len; i++) {
-			(function(i) {
-				setTimeout(function() {
-					$.ajax({
-						url: '/seo-tools/mobile-friendly/api_script.php',
-						type: 'POST',
-						cache: false,
-						data: {url: URLs[i]}, //figure out
-						success: function(data) {
-							ajax_loading = false;
-							var currentDigit = $("#loading span:nth-child(2)").text(); //loading wheel
-							var newDigit = parseInt(currentDigit) + 1;
-							$("#loading span:nth-child(2)").text(newDigit);
-							var JSONdata = JSON.stringify(data);
-							//$("pre").text(JSONdata);
-							var results = JSON && JSON.parse(JSONdata) || $.parseJSON(JSONdata);
-							var url_id = URLs[i];
-/*
+	 $("#table0").addClass("hide"); //jquery styling
+	 $("#maintable").html("");
+	 $("#mobileFriendlyURLsTable").html("");
+	 $("#NotMobileFriendlyURLsTable").html("");
+	 $('.modal').remove();
+	 $(".btn-red-orange").removeClass("disabled");
+	 $("#loading span:nth-child(2)").text("0");
+	 $("#loading span:nth-child(3)").text(URLs.length);
+	 $("#loading").removeClass('hide');
+	 console.log("URLS: ", URLs);
+	 for (var i = 0, len = URLs.length; i < len; i++) {
+		 (function(i) {
+			 setTimeout(function() {
+				 console.log("Sending Request: ", URLs[i]);
+				 $.ajax({
+					 url: '/seo-tools/mobile-friendly/api_script.php',
+					 type: 'POST',
+					 cache: false,
+					 data: {url: URLs[i]}, //figure out
+					 success: function(data) {
+						 console.log("Data from ajax", data);
+						 ajax_loading = false;
+						 var currentDigit = $("#loading span:nth-child(2)").text(); //loading wheel
+						 var newDigit = parseInt(currentDigit) + 1;
+						 $("#loading span:nth-child(2)").text(newDigit);
+						 var JSONdata = JSON.stringify(data);
+						 //$("pre").text(JSONdata);
+						 var results = JSON && JSON.parse(JSONdata) || $.parseJSON(JSONdata);
+						 var url_id = URLs[i];
 
-Steps to take:
-1. Must fix/create testing environment
-2. Have to figure out how to iterate through and manipulate elements that we don't know beforehand, so we can return results ($.each; index value)
-3. Must find a way to iterate through values that you know are not dot orientation
-4. Must return errors for each structured data format (json-ld, microdata, rdfa, microformats)
-5. Remove anything in location -1:-1 (because it's not an error)
+						 if (false) {
+							 var testStatus = results.error.message;
+							 var structuredDataAllGood_icon = 'N/A'; //To Do: give image value!
+						 }
 
+						 //if the API responds with a 200 status code, then go through results
+						 else if (true) {
 
-			Pseudocode:
-						Recussively iterate/go through results.data.json-ld stop when no #errors are left.
+							 var url_id = results.id;
+							 var testStatus = 'Completed';
 
-							Return all item types and properties without an #error message with a positive visual (checkmark).
+							 //what are the errors
+							 var structuredDataIssues = [];
 
+							 //declare an error message array/  JSON_encode
+							 var errorMessages = [];
+							 $.each(results.data, function(key, value){
+								 console.log("Key: ", key , " Value: ", value);
+								 if(key == 'json-ld')
+								 {
+									 var JsonLd = value;
 
-							Print all #values and #messages to the user with an error visual (x).
+								 }
+							 });
+							 console.log("Actual Dat", results.data["json-ld"]);
+							 if(results.data["json-ld"] !== ""/* && results.data["json-ld"].["#location"] !== ""*/) {
+								 //strugging with key/value actual meanings; how do I know if the key and value align
+								 var ErrorCount = 0;
+								 var ErrorMessages = "";
+										 $.each(results.data["json-ld"], function (key, value){
+											 console.log('JSON-LD, KEY: ', key, ' value: ', value);
+											 var hasError = false;
+											 if(value['#error'] != undefined)
+											 {
+												 console.log(value, ' has error');
+												 var ErrorJson  = value['#error'];
+												 $.each(ErrorJson, function(ErroMessageKey, ErrorMessageVal){
+													 ErrorCount ++;
+													 ErrorMessages += '<p>' + ErrorMessageVal['#message'] + '</p>';
+													 console.log("Errors: ", ErrorCount);
+													 console.log("Messages: ", ErrorMessages);
+												 });
+											 }
+										 });
+										 if(ErrorCount > 0)
+										 {
+											 $('#test_div').html('Erros: ' + ErrorCount + ErrorMessages);
+										 }
+								 } else {
+									 console.log("There is no more structured data in the JSON-LD array");
+								 }
 
+									 //array -
+									 $.each(errorMessages, function (){
+									 console.log("Error: " + value);
+								 });
+								 }
 
-							Do not include anything at location -1:-1.
-
-*/
-
-//everything will change
-					//if data has an error provide error message
-
-							if (results.error) {
-								var testStatus = results.error.message;
-								var structuredDataAllGood_icon = 'N/A'; //To Do: give image value!
-							}
-
-							//if the API responds with a 200 status code, then go through results
-							else if (results.responseCode === 200) {
-
-								var url_id = results.id;
-								var testStatus = 'Completed';
-
-								//what are the errors
-								var structuredDataIssues = [];
-
-								//declare an error message array
-								var errorMessages = [];
-									if(results.data["json-ld"] !== "" && results.data["json-ld"].["#location"] !== "") {
-									//strugging with key/value actual meanings; how do I know if the kwy and value align
-											$.each(results.data["json-ld"], function (key, value){
-												if(value == "-1:-1") {
-													console.log("This is not a valid error");
-												}
-												else if (key = "#message") {
-														//add to an array
-														value.push(errorMessages);
-												} else {
-													console.log("Valid Markup! \n This is the attribute: " + key + "\nThis is its value: " + value +"\n\n");
-												}
-											});
-									} else {
-										console.log("There is no more structured data in the JSON-LD array");
-									}
-
-										//array -
-										$.each(errorMessages, function (){
-										console.log("Error: " + value);
-									}
-
-						} // success data function
-					}); // jquery AJAX call http://api.jquery.com/jquery.ajax/
-				}, 500*i); //timeout
-			})(i); // IIFE - immediately invoked function expression
-		} //for all URLs added within the box
-	}});//click function
-}); //document ready function
-
+					 } // success data function
+					 ,
+					 error: function(errorData)
+					 {
+					 $('#test_div').html(errorData.responseText);
+						 console.log("Error,", errorData);
+					 }
+				 }); // jquery AJAX call http://api.jquery.com/jquery.ajax/
+			 }, 500*i); //timeout
+		 })(i); // IIFE - immediately invoked function expression
+	 } //for all URLs added within the box
+ }});//click function
+} //document ready function
 </script>
