@@ -125,23 +125,10 @@
 		}
 </style>
 
-<?php
-//include $_SERVER['DOCUMENT_ROOT']."/seo-tools/nav.html"
-?>
+<!--php + navigation-->
 
-		<ol class="nav navbar-nav navbar-right desktop breadcrumb-custom">
-			<li class="yah"><i class="fa fa-map-marker"></i><i>You are here:</i></li>
-			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
-			<li><a href="/seo-tools/"><i class="fa fa-wrench"></i>SEO Tools</a></li>
-			<li class="current"><a href="/seo-tools/mobile-friendly/" class="animated bounceIn"><i class="fa fa-mobile"></i>Mobile-Friendly Bulk Testing Tool</a></li>
-		</ol>
-
-	  </div>
-	</div>
-</div>
-
-<h1><i class="fa fa-mobile"></i>Mobile-Friendly Bulk Testing Tool</h1>
-<p>Using Google's API, quickly check if your pages are mobile-friendly. If a page is not mobile-friendly click on <i class="fa fa-times-circle fa-nospace"></i> to expand and see the specific issues.</p>
+<h1><i class="fa fa-mobile"></i>Structured Data Bulk Testing Tool</h1>
+<p>Using Yandex's API, quickly check if your pages have any structured data issues.</p>
 <hr>
 <br>
 <div id="loading" class="hide"><i class="fa fa-spinner fa-spin fa-nospace"></i>&nbsp;&nbsp;Completed tests: <span>0</span>/<span></span></div>
@@ -200,8 +187,17 @@
 </div>
 <br>
 <hr>
-<div id="test_div">
-ERRORS
+<div id="test_div_json">
+<!--JSON-LD ERRORS go here-->
+</div>
+<div id="test_div_microdata">
+<!--Microdata ERRORS go here-->
+</div>
+<div id="test_div_rdfa">
+<!--RDFa ERRORS go here-->
+</div>
+<div id="test_div_microformat">
+<!--Microformat ERRORS go here-->
 </div>
 <!-- //COMMENTS
 <div id="disqus_thread"></div>
@@ -215,12 +211,12 @@ window.onload = function(){
  console.log("Window Loaded");
  ajax_loading = false;
 	 $("#url_submit").click(function(){
-console.log('clicked');
+		 console.log('clicked');
 		 if(!ajax_loading) {
-	 ajax_loading = true;
-	 Array.prototype.unique = function() {
-		 return this.filter(function (value, index, self) {
-		 return self.indexOf(value) === index;
+	 	 			ajax_loading = true;
+	 				Array.prototype.unique = function() {
+		 			return this.filter(function (value, index, self) {
+		 			return self.indexOf(value) === index;
 		 });
 	 }
 	 var URLs = $('#URLs').val().split('\n').filter(Boolean).unique().slice(0, 50); //split by line break, remove empty lines, removing duplicates (.unique), limits 50 urls
@@ -234,6 +230,7 @@ console.log('clicked');
 	 $("#loading span:nth-child(2)").text("0");
 	 $("#loading span:nth-child(3)").text(URLs.length);
 	 $("#loading").removeClass('hide');
+
 	 console.log("URLS: ", URLs);
 	 for (var i = 0, len = URLs.length; i < len; i++) {
 		 (function(i) {
@@ -273,39 +270,135 @@ console.log('clicked');
 							 var errorMessages = [];
 							 $.each(results.data, function(key, value){
 								 console.log("Key: ", key , " Value: ", value);
-								 if(key == 'json-ld')
-								 {
-									 var JsonLd = value;
-
-								 }
+								 if(key == 'json-ld') {
+								 var JsonLd = value;
+							 } else if (key == 'microdata') {
+								 var Microdata = value;
+							 }
 							 });
-							 console.log("Actual Dat", results.data["json-ld"]);
-							 if(results.data["json-ld"] !== ""/* && results.data["json-ld"].["#location"] !== ""*/) {
-								 //strugging with key/value actual meanings; how do I know if the key and value align
-								 var ErrorCount = 0;
-								 var ErrorMessages = "";
+
+
+							 console.log("Actual Data", results.data["json-ld"]);
+							 console.log("Actual Data", results.data["microdata"]);
+
+//json-ld errors
+							 if(results.data["json-ld"] != "") {
+								 var ErrorCountjson = 0;
+								 var ErrorMessagesjson = "";
 										 $.each(results.data["json-ld"], function (key, value){
 											 console.log('JSON-LD, KEY: ', key, ' value: ', value);
-											 var hasError = false;
-											 if(value['#error'] != undefined)
-											 {
+											 var hasErrorjson = false;
+											 if(value['#error'] != undefined) {
 												 console.log(value, ' has error');
 												 var ErrorJson  = value['#error'];
-												 $.each(ErrorJson, function(ErroMessageKey, ErrorMessageVal){
-													 ErrorCount ++;
-													 ErrorMessages += '<p>' + ErrorMessageVal['#message'] + '</p>';
-													 console.log("Errors: ", ErrorCount);
-													 console.log("Messages: ", ErrorMessages);
+												 $.each(ErrorJson, function(ErrorMessageKeyjson, ErrorMessageValjson){
+													 	 if(ErrorMessageValjson['#location'] != "-1:-1") {
+															 	ErrorCountjson ++;
+													 			ErrorMessagesjson += '<p>' + ErrorMessageValjson['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValjson['#location'] + '</p>';
+														}
+													 console.log("Errors: ", ErrorCountjson);
+													 console.log("Messages: ", ErrorMessagesjson);
 												 });
 											 }
 										 });
-										 if(ErrorCount > 0)
-										 {
-											 $('#test_div').html('Erros: ' + ErrorCount + ErrorMessages);
+										 if(ErrorCountjson > 0){
+											 $('#test_div_json').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> JSON-LD Errors: ' + ErrorCountjson + '</h2>\n' + ErrorMessagesjson);
+										 } else {
+											 $('#test_div_json').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>JSON-LD Errors: 0</h2><br><p>You don\'t have any JSON-LD errors</p>'); //not sure if this works
 										 }
 								 } else {
-									 console.log("There is no more structured data in the JSON-LD array");
-								 }
+									 console.log("There is no JSON-LD structured data");
+									 $('#test_div_json').html('<p>You don\'t have any JSON-LD</p>'); //not sure if this works
+}
+//Microdata errors
+							 if(results.data["microdata"] != "") {
+								 var ErrorCountMicrodata = 0;
+								 var ErrorMessagesMicrodata = "";
+										 $.each(results.data["microdata"], function (key, value){
+											 console.log('Microdata, KEY: ', key, ' value: ', value);
+											 var hasErrorMicrodata = false;
+											 if(value['#error'] != undefined) {
+												 console.log(value, ' has error');
+												 var ErrorMicrodata  = value['#error'];
+												 $.each(ErrorMicrodata, function(ErrorMessageKeyMicrodata, ErrorMessageValMicrodata){
+														 if(ErrorMessageValMicrodata['#location'] != "-1:-1") {
+																ErrorCountMicrodata ++;
+																ErrorMessagesMicrodata += '<p>' + ErrorMessageValMicrodata['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValMicrodata['#location'] + '</p>';
+														}
+													 console.log("Errors: ", ErrorCountMicrodata);
+													 console.log("Messages: ", ErrorMessagesMicrodata);
+												 });
+											 }
+										 });
+										 if(ErrorCountMicrodata > 0){
+											 $('#test_div_Microdata').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> Microdata Errors: ' + ErrorCountMicrodata + '</h2>\n' + ErrorMessagesMicrodata);
+										 } else {
+											 $('#test_div_Microdata').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>Microdata Errors: 0</h2><br><p>You don\'t have any Microdata errors</p>'); //not sure if this works
+										 }
+								 } else {
+									 console.log("There is no Microdata structured data");
+									 $('#test_div_microdata').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microdata: N/A</h2><p>You don\'t have any Microdata</p>'); //not sure if this works
+								 	}
+
+//Microformat errors
+															 if(results.data["microformat"] != "") {
+																	 var ErrorCountMicroformat = 0;
+																	 var ErrorMessagesMicroformat = "";
+																			 $.each(results.data["microformat"], function (key, value){
+																				 console.log('Microformat, KEY: ', key, ' value: ', value);
+																				 var hasErrorMicroformat = false;
+																				 if(value['#error'] != undefined) {
+																					 console.log(value, ' has error');
+																					 var ErrorMicroformat  = value['#error'];
+																					 $.each(ErrorMicroformat, function(ErrorMessageKeyMicroformat, ErrorMessageValMicroformat){
+																							 if(ErrorMessageValMicroformat['#location'] != "-1:-1") {
+																									ErrorCountMicroformat ++;
+																									ErrorMessagesMicroformat += '<p>' + ErrorMessageValMicroformat['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValMicroformat['#location'] + '</p>';
+																							}
+																						 console.log("Errors: ", ErrorCountMicroformat);
+																						 console.log("Messages: ", ErrorMessagesMicroformat);
+																					 });
+																				 }
+																			 });
+																			 if(ErrorCountMicroformat > 0){
+																				 $('#test_div_Microformat').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> Microformat Errors: ' + ErrorCountMicroformat + '</h2>\n' + ErrorMessagesMicroformat);
+																			 } else {
+																				 $('#test_div_Microformat').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>Microformat Errors: 0</h2><br><p>You don\'t have any Microformat errors</p>'); //not sure if this works
+																			 }
+																	 } else {
+																		 console.log("There is no Microformat structured data");
+																		 $('#test_div_microformat').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microformat: N/A</h2><p>You don\'t have any Microformat</p>'); //not sure if this works
+																	 	}
+
+																		//rdfa errors
+																									 if(results.data["rdfa"] != "") {
+																										 var ErrorCountRdfa = 0;
+																										 var ErrorMessagesRdfa = "";
+																												 $.each(results.data["rdfa"], function (key, value){
+																													 console.log('rdfa, KEY: ', key, ' value: ', value);
+																													 var hasErrorRdfa = false;
+																													 if(value['#error'] != undefined) {
+																														 console.log(value, ' has error');
+																														 var ErrorRdfa  = value['#error'];
+																														 $.each(ErrorRdfa, function(ErrorMessageKeyRdfa, ErrorMessageValRdfa){
+																																 if(ErrorMessageValRdfa['#location'] != "-1:-1") {
+																																		ErrorCountRdfa ++;
+																																		ErrorMessagesRdfa += '<p>' + ErrorMessageValRdfa['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValRdfa['#location'] + '</p>';
+																																}
+																															 console.log("Errors: ", ErrorCountRdfa);
+																															 console.log("Messages: ", ErrorMessagesRdfa);
+																														 });
+																													 }
+																												 });
+																												 if(ErrorCountRdfa > 0){
+																													 $('#test_div_rdfa').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> RDFa Errors: ' + ErrorCountRdfa + '</h2>\n' + ErrorMessagesRdfa);
+																												 } else {
+																													 $('#test_div_rdfa').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>RDFa Errors: 0</h2><br><p>You don\'t have any RDFa errors</p>'); //not sure if this works
+																												 }
+																										 } else {
+																											 console.log("There is no rdfa structured data");
+																											 $('#test_div_rdfa').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>RDFa: N/A</h2><p>You don\'t have any RDFa</p>'); //not sure if this works
+																										 	}
 
 									 //array -
 									 $.each(errorMessages, function (){
