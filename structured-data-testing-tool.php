@@ -144,7 +144,7 @@
 	</div>
 	<div class="col-md-2">
 		<label>&nbsp;</label><br>
-		<button class="btn btn-red-orange disabled" style="width:100%;pointer-events:all;" onclick="tablesToExcel(['table1','table2'], ['Mobile-Friendly URLs','Not Mobile-Friendly URLs'], 'mobile-friendliness-report.xls', 'Excel')"><i class="fa fa-file-excel-o"></i>.CSV</button>
+		<button class="btn btn-red-orange disabled" style="width:100%;pointer-events:all;" onclick="tablesToExcel(['table1','table2'], ['Valid Structured Data URLs','Non-valid Structured Data URLs'], 'structured-data-report.xls', 'Excel')"><i class="fa fa-file-excel-o"></i>.CSV</button>
 	</div>
 </div>
 <br>
@@ -154,8 +154,10 @@
 		<tr>
 			<th>URL</th>
 			<th>Test Status</th>
-			<th>Mobile-Friendly?</th>
-			<th>Screenshot</th>
+			<th>Valid JSON-LD</th>
+			<th>Valid Microdata</th>
+			<th>Valid RDFa</th>
+			<th>Valid Microformat</th>
 		</tr>
 	</thead>
 	<tbody id="maintable">
@@ -163,42 +165,42 @@
 </table>
 
 <div class="hide">
-	<!--mobileFriendlyURLs-->
+	<!--validStructuredDataURLs-->
 	<table id="table1">
 		<thead><tr><th>URL</th></tr></thead>
-		<tbody id="mobileFriendlyURLsTable">
+		<tbody id="validStructuredDataTable">
 		</tbody>
 	</table>
-	<!--NotMobileFriendlyURLs-->
+	<!--NotvalidStructuredDataURLs-->
 	<table id="table2">
 		<thead>
 			<tr>
 				<th>URL</th>
-				<th>Uses incompatible plugins</th>
-				<th>Configure viewport</th>
-				<th>Size content to viewport</th>
-				<th>Use legible font sizes</th>
-				<th>Tap targets too close</th>
+				<th>JSON-LD</th>
+				<th>Microdata</th>
+				<th>RDFa</th>
+				<th>Microformats</th>
 			</tr>
 		</thead>
-		<tbody id="NotMobileFriendlyURLsTable">
+		<tbody id="NotvalidStructuredDataTable">
 		</tbody>
 	</table>
 </div>
 <br>
 <hr>
 <div id="test_div_json">
-<!--JSON-LD ERRORS go here-->
+		<!--JSON-LD ERRORS go here-->
 </div>
 <div id="test_div_microdata">
-<!--Microdata ERRORS go here-->
+		<!--Microdata ERRORS go here-->
 </div>
 <div id="test_div_rdfa">
-<!--RDFa ERRORS go here-->
+		<!--RDFa ERRORS go here-->
 </div>
 <div id="test_div_microformat">
-<!--Microformat ERRORS go here-->
+		<!--Microformat ERRORS go here-->
 </div>
+
 <!-- //COMMENTS
 <div id="disqus_thread"></div>
 <script>disqus();setCurrent()</script> -->
@@ -208,7 +210,15 @@
 <script type="text/javascript">
 
 window.onload = function(){
+
+
  console.log("Window Loaded");
+ //tooltip with errors
+		 $( function() {
+			 $('[data-toggle="tooltip"]').tooltip();
+		 } );
+
+
  ajax_loading = false;
 	 $("#url_submit").click(function(){
 		 console.log('clicked');
@@ -223,8 +233,8 @@ window.onload = function(){
 
 	 $("#table0").addClass("hide"); //jquery styling
 	 $("#maintable").html("");
-	 $("#mobileFriendlyURLsTable").html("");
-	 $("#NotMobileFriendlyURLsTable").html("");
+	 $("#validStructuredDataTable").html("");
+	 $("#NotvalidStructuredDataTable").html("");
 	 $('.modal').remove();
 	 $(".btn-red-orange").removeClass("disabled");
 	 $("#loading span:nth-child(2)").text("0");
@@ -254,66 +264,75 @@ window.onload = function(){
 
 						 if (false) {
 							 var testStatus = results.error.message;
-							 var structuredDataAllGood_icon = 'N/A'; //To Do: give image value!
+							 var structuredDataAllGood_icon = '<i class="fa fa-bug" aria-hidden="true"></i>'; //To Do: give image value!
 						 }
 
 						 //if the API responds with a 200 status code, then go through results
 						 else if (true) {
 
-							 var url_id = results.id;
+							 var url_id = results.id; //This is null (could be that the last API had the value as an id. This API does not)
 							 var testStatus = 'Completed';
 
 							 //what are the errors
-							 var structuredDataIssues = [];
+							 var structuredDataIssuesJson = [];
+							 var structuredDataIssuesMicrodata = [];
+							 var structuredDataIssuesRdfa= [];
+							 var structuredDataIssuesMicroformat = [];
 
-							 //declare an error message array/  JSON_encode
 							 var errorMessages = [];
-							 $.each(results.data, function(key, value){
-								 console.log("Key: ", key , " Value: ", value);
-								 if(key == 'json-ld') {
-								 var JsonLd = value;
-							 } else if (key == 'microdata') {
-								 var Microdata = value;
-							 }
-							 });
-
-
-							 console.log("Actual Data", results.data["json-ld"]);
-							 console.log("Actual Data", results.data["microdata"]);
+							 var xSymbol =  '<i class="fa fa-times-circle" aria-hidden="true"></i>';
+							 var checkmark = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
+							 var naSymbol = 'N/A'; // I want to use this eventually, but haven't yet
 
 //json-ld errors
 							 if(results.data["json-ld"] != "") {
-								 var ErrorCountjson = 0;
-								 var ErrorMessagesjson = "";
+								 var ErrorCountJson = 0;
+								 var ErrorMessagesJson = "";
+								 var ErrorMessagesJsonTooltip = "";
 										 $.each(results.data["json-ld"], function (key, value){
 											 console.log('JSON-LD, KEY: ', key, ' value: ', value);
-											 var hasErrorjson = false;
+											 var hasErrorJson = false;
 											 if(value['#error'] != undefined) {
 												 console.log(value, ' has error');
 												 var ErrorJson  = value['#error'];
-												 $.each(ErrorJson, function(ErrorMessageKeyjson, ErrorMessageValjson){
-													 	 if(ErrorMessageValjson['#location'] != "-1:-1") {
-															 	ErrorCountjson ++;
-													 			ErrorMessagesjson += '<p>' + ErrorMessageValjson['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValjson['#location'] + '</p>';
+												 $.each(ErrorJson, function(ErrorMessageKeyJson, ErrorMessageValJson){
+													 	 if(ErrorMessageValJson['#location'] != "-1:-1") {
+															 	ErrorCountJson ++;
+																ErrorMessagesJson += '<p>' + ErrorMessageValJson['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValJson['#location'] + '</p>';
+																structuredDataIssuesJson.push(ErrorMessagesJson);
+																ErrorMessagesJsonTooltip +=  '<a href="#" data-toggle="tooltip" title=\"' + ErrorMessageValJson['#message'] + ' :: Found within HTML at: ' + ErrorMessageValJson['#location'] + '\">' ;
+																console.log('I should have json-ld errors: ' + ErrorMessagesJson);
 														}
-													 console.log("Errors: ", ErrorCountjson);
-													 console.log("Messages: ", ErrorMessagesjson);
-												 });
+													 console.log("Errors: ", ErrorCountJson);
+													 console.log("Messages: ", ErrorMessagesJson);
+											 });
 											 }
 										 });
-										 if(ErrorCountjson > 0){
-											 $('#test_div_json').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> JSON-LD Errors: ' + ErrorCountjson + '</h2>\n' + ErrorMessagesjson);
+										 if(ErrorCountJson > 0){
+											 $('#test_div_json').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> JSON-LD Errors: ' + ErrorCountJson + '</h2>\n' + ErrorMessagesJson);
 										 } else {
 											 $('#test_div_json').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>JSON-LD Errors: 0</h2><br><p>You don\'t have any JSON-LD errors</p>'); //not sure if this works
 										 }
 								 } else {
 									 console.log("There is no JSON-LD structured data");
-									 $('#test_div_json').html('<p>You don\'t have any JSON-LD</p>'); //not sure if this works
+									 $('#test_div_json').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>JSON-LD: N/A</h2><p>You don\'t have any JSON-LD</p>'); //not sure if this works
 }
+
+if(ErrorMessagesJson == "") {
+	ErrorMessagesJsonTooltip = '<a href="#" data-toggle="tooltip" title="There are no JSON-LD errors markup on this page. Way to go!"';
+} else if (ErrorMessagesJson == undefined) {
+	ErrorMessagesJsonTooltip = '<a href="#" data-toggle="tooltip" title="There was no JSON-LD markup on this page. Consider checking out our site to find opportunities"';
+}
+
+var jsonLdValid = (structuredDataIssuesJson != "") ? xSymbol : checkmark;
+console.log('This is the value of jsonLdValid: ' + jsonLdValid);
+
+
 //Microdata errors
 							 if(results.data["microdata"] != "") {
 								 var ErrorCountMicrodata = 0;
 								 var ErrorMessagesMicrodata = "";
+								 var ErrorMessagesMicrodataTooltip = "";
 										 $.each(results.data["microdata"], function (key, value){
 											 console.log('Microdata, KEY: ', key, ' value: ', value);
 											 var hasErrorMicrodata = false;
@@ -324,7 +343,10 @@ window.onload = function(){
 														 if(ErrorMessageValMicrodata['#location'] != "-1:-1") {
 																ErrorCountMicrodata ++;
 																ErrorMessagesMicrodata += '<p>' + ErrorMessageValMicrodata['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValMicrodata['#location'] + '</p>';
-														}
+																structuredDataIssuesMicrodata.push(ErrorMessagesMicrodata);
+																ErrorMessagesMicrodataTooltip +=  '<a href="#" data-toggle="tooltip" title=\"' + ErrorMessageValMicrodata['#message'] + ' :: Found within HTML at: ' + ErrorMessageValMicrodata['#location'] + '\">' ;
+
+																}
 													 console.log("Errors: ", ErrorCountMicrodata);
 													 console.log("Messages: ", ErrorMessagesMicrodata);
 												 });
@@ -340,10 +362,21 @@ window.onload = function(){
 									 $('#test_div_microdata').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microdata: N/A</h2><p>You don\'t have any Microdata</p>'); //not sure if this works
 								 	}
 
+									if(ErrorMessagesMicrodata == "") {
+										ErrorMessagesMicrodataTooltip = '<a href="#" data-toggle="tooltip" title="There are no Microdata markup errors on this page. Way to go!"';
+									} else if (ErrorMessagesMicrodata == undefined) {
+										ErrorMessagesMicrodataTooltip = '<a href="#" data-toggle="tooltip" title="There was no Microdata markup on this page. Consider checking out our site to find opportunities"';
+									}
+
+var microdataValid = (structuredDataIssuesMicrodata != "") ? xSymbol : checkmark;
+console.log('This is the value of microdataValid: ' + microdataValid);
+
+
 //Microformat errors
 															 if(results.data["microformat"] != "") {
 																	 var ErrorCountMicroformat = 0;
 																	 var ErrorMessagesMicroformat = "";
+																	 var ErrorMessagesMicroformatTooltip = "";
 																			 $.each(results.data["microformat"], function (key, value){
 																				 console.log('Microformat, KEY: ', key, ' value: ', value);
 																				 var hasErrorMicroformat = false;
@@ -354,7 +387,10 @@ window.onload = function(){
 																							 if(ErrorMessageValMicroformat['#location'] != "-1:-1") {
 																									ErrorCountMicroformat ++;
 																									ErrorMessagesMicroformat += '<p>' + ErrorMessageValMicroformat['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValMicroformat['#location'] + '</p>';
-																							}
+																									structuredDataIssuesMicroformat.push(ErrorMessagesMicroformat);
+																									ErrorMessagesMicroformatTooltip +=  '<a href="#" data-toggle="tooltip" title=\"' + ErrorMessageValMicroformat['#message'] + ' :: Found within HTML at: ' + ErrorMessageValMicroformat['#location'] + '\">' ;
+
+																						}
 																						 console.log("Errors: ", ErrorCountMicroformat);
 																						 console.log("Messages: ", ErrorMessagesMicroformat);
 																					 });
@@ -370,10 +406,22 @@ window.onload = function(){
 																		 $('#test_div_microformat').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microformat: N/A</h2><p>You don\'t have any Microformat</p>'); //not sure if this works
 																	 	}
 
+																		if(ErrorMessagesMicroformat == "") {
+																		  ErrorMessagesMicroformatTooltip = '<a href="#" data-toggle="tooltip" title="There are no Microformat markup errors on this page. Way to go!"';
+																		} else if (ErrorMessagesMicroformat == undefined) {
+																		  ErrorMessagesMicroformatTooltip = '<a href="#" data-toggle="tooltip" title="There was no Microformat markup on this page. Consider checking out our site to find opportunities"';
+																		} else {
+																			console.log(":P");
+																		}
+
+																	var microformatValid	= (structuredDataIssuesMicroformat != "") ? xSymbol : checkmark;
+																		console.log('This is the value of microformatValid: ' + microformatValid);
+
 																		//rdfa errors
 																									 if(results.data["rdfa"] != "") {
 																										 var ErrorCountRdfa = 0;
 																										 var ErrorMessagesRdfa = "";
+																										 var ErrorMessagesRdfaTooltip = "";
 																												 $.each(results.data["rdfa"], function (key, value){
 																													 console.log('rdfa, KEY: ', key, ' value: ', value);
 																													 var hasErrorRdfa = false;
@@ -383,8 +431,16 @@ window.onload = function(){
 																														 $.each(ErrorRdfa, function(ErrorMessageKeyRdfa, ErrorMessageValRdfa){
 																																 if(ErrorMessageValRdfa['#location'] != "-1:-1") {
 																																		ErrorCountRdfa ++;
-																																		ErrorMessagesRdfa += '<p>' + ErrorMessageValRdfa['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValRdfa['#location'] + '</p>';
+																																		//ErrorMessagesRdfa += '<p>' + ErrorMessageValRdfa['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValRdfa['#location'] + '</p>';
+																																		//structuredDataIssuesRdfa.push(ErrorMessagesRdfa);
 																																}
+																																//New 5 lines are for test - uncomment above
+																																	ErrorMessagesRdfa += '<p>' + ErrorMessageValRdfa['#message'] + "<br>" + '&nbsp;&nbsp;&nbsp;Found within HTML here: ' + ErrorMessageValRdfa['#location'] + '</p>';
+																																	structuredDataIssuesRdfa.push(ErrorMessagesRdfa);
+																																	ErrorMessagesRdfaTooltip +=  '<a href="#" data-toggle="tooltip" title=\"' + ErrorMessageValRdfa['#message'] + ' :: Found within HTML at: ' + ErrorMessageValRdfa['#location'] + '\">' ;
+
+																																	console.log('I should have RDFa errors: ' + ErrorMessagesRdfa);
+
 																															 console.log("Errors: ", ErrorCountRdfa);
 																															 console.log("Messages: ", ErrorMessagesRdfa);
 																														 });
@@ -400,6 +456,46 @@ window.onload = function(){
 																											 $('#test_div_rdfa').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>RDFa: N/A</h2><p>You don\'t have any RDFa</p>'); //not sure if this works
 																										 	}
 
+																											if(ErrorMessagesRdfa == "") {
+																											  ErrorMessagesRdfaTooltip = '<a href="#" data-toggle="tooltip" title="There are no RDFa markup errors on this page. Way to go!"';
+																											} else if (ErrorMessagesRdfa == undefined) {
+																											  ErrorMessagesRdfaTooltip = '<a href="#" data-toggle="tooltip" title="There was no RDFa markup on this page. Consider checking out our site to find opportunities"';
+																											} else {
+																												console.log(":D");
+																											}
+
+																										var rdfaValid	= (structuredDataIssuesRdfa != "") ? xSymbol : checkmark;
+																											console.log('This is the value of rdfaValid: ' + rdfaValid);
+
+console.log('Json: ' + ErrorMessagesJsonTooltip + "::::::: Microdata: "  + ErrorMessagesMicrodataTooltip + ":::::::RDfa: " + ErrorMessagesRdfaTooltip + ":::::::Microformat :" + ErrorMessagesMicroformatTooltip + ":::::::" );
+
+//adding rows to table with data
+var newTR = '<tr class="active">'
+		+ '<td class="url-td"><a href="' + URLs[i] + '" title="' + URLs[i] + '" target="_blank" data-toggle="tooltip" data-placement="top">' + URLs[i] + '</a></td>'
+			+ '<td>' + testStatus + '</td>'
+			+ '<td class="brdr-left">' + ErrorMessagesJsonTooltip + jsonLdValid + '</a></td>'
+			+ '<td class="brdr-left">' + ErrorMessagesMicrodataTooltip + microdataValid + '</a></td>'
+			+ '<td class="brdr-left">' + ErrorMessagesRdfaTooltip + rdfaValid + '</a></td>'
+			+ '<td class="brdr-left">' + ErrorMessagesMicroformatTooltip + microformatValid + '</a></td>'
+  		+ '</tr>'
+			+ '<tr>'
+			+ '<td colspan="4">'
+			+ '<div class="collapse" id="url_num_' + i + '">'
+			+ '<table class="table"><thead><tr><th><i class="fa fa-times-circle"></i>Issue</th></tr></thead><tbody id="sdi_' + i + '">'
+						+ '</tbody></table>'
+			+ '</div>'
+			+ '</td>'
+				+ '</tr>';
+
+																											$("#table0").removeClass("hide");
+																											$("#maintable").append(newTR);
+																											$('[data-toggle="tooltip"]').tooltip()
+
+
+
+									//hide loading bar, by adding a hide CSS class
+									$("#loading").addClass('hide');
+
 									 //array -
 									 $.each(errorMessages, function (){
 									 console.log("Error: " + value);
@@ -410,7 +506,7 @@ window.onload = function(){
 					 ,
 					 error: function(errorData)
 					 {
-					 $('#test_div').html(errorData.responseText);
+					 $('#test_div').html('<h2>Sorry! The API acting up!<.h2><br><p>Here\'s some error data from the API: <br>' +errorData.responseText +'</p>');
 						 console.log("Error,", errorData);
 					 }
 				 }); // jquery AJAX call http://api.jquery.com/jquery.ajax/
