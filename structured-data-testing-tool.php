@@ -438,7 +438,7 @@
                                                     jsonValid = naSymbol;
                                                     jsonValidTable = naSymbol;
                                                 } else if (ErrorMessagesJson == "") {
-                                                    jsonValid = checkmark;
+                                                    jsonValid = checkmark + ' ' + jsonGoodCount;
                                                     jsonValidTable = "All Valid";
                                                 } else {
                                                     jsonValid = xSymbol + ' ' + ErrorCountJson;
@@ -500,7 +500,7 @@
                                                     microdataValid = naSymbol;
                                                     microdataValidTable = naSymbol;
                                                 } else if (ErrorMessagesMicrodata == "") {
-                                                    microdataValid = checkmark;
+                                                    microdataValid = checkmark + ' ' + microdataGoodCount ;
                                                     microdataValidTable = "All Valid";
                                                 } else {
                                                     microdataValid = xSymbol + ' ' + ErrorCountMicrodata;
@@ -563,7 +563,7 @@
                                                     microformatValid = naSymbol;
                                                     microformatValidTable = naSymbol;
                                                 } else if (ErrorMessagesMicroformat == "") {
-                                                    microformatValid = checkmark;
+                                                    microformatValid = checkmark + ' ' + microformatGoodCount;
                                                     microformatValidTable = "All Valid";
                                                 } else {
                                                     microformatValid = xSymbol + ' ' + ErrorCountMicrodata;
@@ -627,7 +627,7 @@
                                                     rdfaValid = naSymbol;
                                                     rdfaValidTable = naSymbol;
                                                 } else if (ErrorMessagesRdfa == "") {
-                                                    rdfaValid = checkmark;
+                                                    rdfaValid = checkmark + '  ' + rdfaGoodCount;
                                                     rdfaValidTable = "All Valid";
                                                 } else {
                                                     rdfaValid = xSymbol + ' ' + ErrorCountRdfa;
@@ -668,7 +668,13 @@
                                                 }
 
                                                 //adding rows to table with data
-                                                var newTR = '<tr class="active">' + '<td class="url-td"><a href="' + URLs[i] + '" title="' + URLs[i] + '" target="_blank" data-toggle="tooltip" data-placement="top">' + URLs[i] + '</a></td>' + '<td>' + testStatus + '</td>' + '<td class="brdr-left">' + ErrorMessagesJsonTooltip + jsonValid + '  ' + jsonGoodCount + '</a></td>' + '<td class="brdr-left">' + ErrorMessagesMicrodataTooltip + microdataValid + '  ' + microdataGoodCount + '</a></td>' + '<td class="brdr-left">' + ErrorMessagesRdfaTooltip + rdfaValid + '  ' + rdfaGoodCount + '</a></td>' + '<td class="brdr-left">' + ErrorMessagesMicroformatTooltip + microformatValid + '  ' + microformatGoodCount + '</a></td>' + '</tr>'
+                                                var newTR = '<tr class="active">' + '<td class="url-td"><a href="'
+                                                + URLs[i] + '" title="' + URLs[i] + '" target="_blank" data-toggle="tooltip" data-placement="top">'
+                                                + URLs[i] + '</a></td>' + '<td>' + testStatus + '</td>'
+                                                + '<td class="brdr-left">' + ErrorMessagesJsonTooltip + jsonValid + '</a></td>'
+                                                + '<td class="brdr-left">' + ErrorMessagesMicrodataTooltip + microdataValid + '</a></td>'
+                                                + '<td class="brdr-left">' + ErrorMessagesRdfaTooltip + rdfaValid + '</a></td>' + '<td class="brdr-left">'
+                                                + ErrorMessagesMicroformatTooltip + microformatValid + '</a></td>' + '</tr>'
 
                                                 +'<tr><td></td><td>Item Type</td>' + '<td><ul>' + allJsonStuff + '</ul></td>' + '<td><ul>' + allMicrodataStuff + '</ul></td>' + '<td><ul>' + allRdfaStuff + '</ul></td>' + '<td><ul>' + allMicroformatStuff + '</ul></td></tr>'
 
