@@ -240,7 +240,7 @@
     <div class="col-md-2">
         <label>&nbsp;</label>
         <br>
-        <button class="btn btn-red-orange disabled" style="width:100%;pointer-events:all;" onclick="tablesToExcel(['table1','table2'], ['Valid Structured Data URLs','Non-valid Structured Data URLs'], 'structured-data-report.xls', 'Excel')"><i class="fa fa-file-excel-o"></i>.CSV</button>
+        <button class="btn btn-red-orange disabled" style="width:100%;pointer-events:all;" onclick="tablesToExcel(['table1'], ['Structured Data'], 'structured-data-report.xls', 'Excel')"><i class="fa fa-file-excel-o"></i>.CSV</button>
     </div>
 </div>
 <br>
@@ -261,48 +261,35 @@
 </table>
 
 <div class="hide">
-    <!--validStructuredDataURLs-->
     <table id="table1">
         <thead>
             <tr>
                 <th>URL</th>
+                <th>Test Status</th>
+                <th>Valid JSON-LD</th>
+                <th>Valid Microdata</th>
+                <th>Valid RDFa</th>
+                <th>Valid Microformat</th>
             </tr>
         </thead>
-        <tbody id="validStructuredDataTable">
-        </tbody>
-    </table>
-    <!--NotvalidStructuredDataURLs-->
-    <table id="table2">
-        <thead>
-            <tr>
-                <th>URL</th>
-                <th>JSON-LD</th>
-                <th>Microdata</th>
-                <th>RDFa</th>
-                <th>Microformats</th>
-            </tr>
-        </thead>
-        <tbody id="NotvalidStructuredDataTable">
+        <tbody id="structuredDataTable">
         </tbody>
     </table>
 </div>
+
 <br>
 <hr>
 <div id="test_div">
     <!--Generic API ERRORS go here-->
 </div>
-<div id="test_div_json">
-    <!--JSON-LD ERRORS go here-->
+<!--<div id="test_div_json">
 </div>
 <div id="test_div_microdata">
-    <!--Microdata ERRORS go here-->
 </div>
 <div id="test_div_rdfa">
-    <!--RDFa ERRORS go here-->
 </div>
 <div id="test_div_microformat">
-    <!--Microformat ERRORS go here-->
-</div>
+</div>-->
 
 <!-- //COMMENTS
 <div id="disqus_thread"></div>
@@ -310,6 +297,7 @@
 
 <!--outputting excel -->
 <script src="/resources/tools/table-excel.js"></script>
+
 <script type="text/javascript">
     window.onload = function() {
             //windows onload b/c document ready wasn't functioning properly; jQuery wasn't loaded on time
@@ -334,8 +322,7 @@
 
                     $("#table0").addClass("hide"); //jquery styling
                     $("#maintable").html("");
-                    $("#validStructuredDataTable").html("");
-                    $("#NotvalidStructuredDataTable").html("");
+                    $("#structuredDataTable").html("");
                     $('.modal').remove();
                     $(".btn-red-orange").removeClass("disabled");
                     $("#loading span:nth-child(2)").text("0");
@@ -426,15 +413,15 @@
                                                         }
 
                                                     });
-                                                    //All of the markup below the chart; will likely delete
-                                                    if (ErrorCountJson > 0) {
+                                                    /*if (ErrorCountJson > 0) {
                                                         $('#test_div_json').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> JSON-LD Errors: ' + ErrorCountJson + '</h2>\n' + ErrorMessagesJson);
                                                     } else {
                                                         $('#test_div_json').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>JSON-LD Errors: 0</h2><br><p>You don\'t have any JSON-LD errors</p>'); //not sure if this works
-                                                    }
-                                                } else {
-                                                    $('#test_div_json').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>JSON-LD: N/A</h2><p>You don\'t have any JSON-LD</p>'); //not sure if this works
+                                                    }*/
                                                 }
+                                                /*else {
+                                                                                                   $('#test_div_json').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>JSON-LD: N/A</h2><p>You don\'t have any JSON-LD</p>'); //not sure if this works
+                                                                                               }*/
 
                                                 //Tooltip message for the JSON-Ld cell on table
                                                 if (ErrorMessagesJson == "") {
@@ -443,15 +430,19 @@
                                                     ErrorMessagesJsonTooltip = '<a href="#" data-toggle="tooltip" title="There was no JSON-LD markup on this page. Consider checking out our site to find opportunities"';
                                                 }
 
-                                                //symbol in the table (Markup good, No markup, errors in markup)
-                                                var jsonValid = "";
+                                                //symbol in the chart on the web and the table in the CSV  (Markup good, No markup, errors in markup)
+                                                var jsonValid = ""; //on-page
+                                                var jsonValidTable = ""; //CSV (since font awesome won't translate to CSV)
 
                                                 if (ErrorMessagesJson == undefined) {
                                                     jsonValid = naSymbol;
+                                                    jsonValidTable = naSymbol;
                                                 } else if (ErrorMessagesJson == "") {
                                                     jsonValid = checkmark;
+                                                    jsonValidTable = "All Valid";
                                                 } else {
                                                     jsonValid = xSymbol + ' ' + ErrorCountJson;
+                                                    jsonValidTable = "Errors Detected";
                                                 }
 
                                                 //Microdata errors
@@ -486,14 +477,15 @@
                                                             });
                                                         }
                                                     });
-                                                    if (ErrorCountMicrodata > 0) {
+                                                    /*if (ErrorCountMicrodata > 0) {
                                                         $('#test_div_Microdata').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> Microdata Errors: ' + ErrorCountMicrodata + '</h2>\n' + ErrorMessagesMicrodata);
                                                     } else {
                                                         $('#test_div_Microdata').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>Microdata Errors: 0</h2><br><p>You don\'t have any Microdata errors</p>'); //not sure if this works
-                                                    }
-                                                } else {
-                                                    $('#test_div_microdata').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microdata: N/A</h2><p>You don\'t have any Microdata</p>'); //not sure if this works
+                                                    }*/
                                                 }
+                                                /*else {
+                                                                                                   $('#test_div_microdata').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microdata: N/A</h2><p>You don\'t have any Microdata</p>'); //not sure if this works
+                                                                                               }*/
 
                                                 if (ErrorMessagesMicrodata == "") {
                                                     ErrorMessagesMicrodataTooltip = '<a href="#" data-toggle="tooltip" title="There are no Microdata markup errors on this page. Way to go!"';
@@ -502,13 +494,17 @@
                                                 }
 
                                                 var microdataValid = "";
+                                                var microdataValidTable = "";
 
                                                 if (ErrorMessagesMicrodata == undefined) {
                                                     microdataValid = naSymbol;
+                                                    microdataValidTable = naSymbol;
                                                 } else if (ErrorMessagesMicrodata == "") {
                                                     microdataValid = checkmark;
+                                                    microdataValidTable = "All Valid";
                                                 } else {
                                                     microdataValid = xSymbol + ' ' + ErrorCountMicrodata;
+                                                    microdataValidTable = "Errors Detected";
                                                 }
 
                                                 //Microformat errors
@@ -544,14 +540,15 @@
                                                             });
                                                         }
                                                     });
-                                                    if (ErrorCountMicroformat > 0) {
+                                                    /*if (ErrorCountMicroformat > 0) {
                                                         $('#test_div_Microformat').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> Microformat Errors: ' + ErrorCountMicroformat + '</h2>\n' + ErrorMessagesMicroformat);
                                                     } else {
                                                         $('#test_div_Microformat').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>Microformat Errors: 0</h2><br><p>You don\'t have any Microformat errors</p>'); //not sure if this works
-                                                    }
-                                                } else {
-                                                    $('#test_div_microformat').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microformat: N/A</h2><p>You don\'t have any Microformat</p>'); //not sure if this works
+                                                    }*/
                                                 }
+                                                /*else {
+                                                                                                   $('#test_div_microformat').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>Microformat: N/A</h2><p>You don\'t have any Microformat</p>'); //not sure if this works
+                                                                                               }*/
 
                                                 if (ErrorMessagesMicroformat == "") {
                                                     ErrorMessagesMicroformatTooltip = '<a href="#" data-toggle="tooltip" title="There are no Microformat markup errors on this page. Way to go!"';
@@ -560,13 +557,17 @@
                                                 }
 
                                                 var microformatValid = "";
+                                                var microformatValidTable = "";
 
                                                 if (ErrorMessagesMicroformat == undefined) {
                                                     microformatValid = naSymbol;
+                                                    microformatValidTable = naSymbol;
                                                 } else if (ErrorMessagesMicroformat == "") {
                                                     microformatValid = checkmark;
+                                                    microformatValidTable = "All Valid";
                                                 } else {
                                                     microformatValid = xSymbol + ' ' + ErrorCountMicrodata;
+                                                    microformatValidTable = "Errors Detected";
                                                 }
 
                                                 //rdfa errors
@@ -603,14 +604,15 @@
                                                             });
                                                         }
                                                     });
-                                                    if (ErrorCountRdfa > 0) {
+                                                    /*if (ErrorCountRdfa > 0) {
                                                         $('#test_div_rdfa').html('<h2><i class="fa fa-times-circle" aria-hidden="true"></i> RDFa Errors: ' + ErrorCountRdfa + '</h2>\n' + ErrorMessagesRdfa);
                                                     } else {
                                                         $('#test_div_rdfa').html('<h2><i class="fa fa-check-circle" aria-hidden="true"></i>RDFa Errors: 0</h2><br><p>You don\'t have any RDFa errors</p>'); //not sure if this works
-                                                    }
-                                                } else {
-                                                    $('#test_div_rdfa').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>RDFa: N/A</h2><p>You don\'t have any RDFa</p>'); //not sure if this works
+                                                    }*/
                                                 }
+                                                /*else {
+                                                                                                   $('#test_div_rdfa').html('<h2><i class="fa fa-meh-o" aria-hidden="true"></i>RDFa: N/A</h2><p>You don\'t have any RDFa</p>'); //not sure if this works
+                                                                                               }*/
 
                                                 if (ErrorMessagesRdfa == "") {
                                                     ErrorMessagesRdfaTooltip = '<a href="#" data-toggle="tooltip" title="There are no RDFa markup errors on this page. Way to go!"';
@@ -619,13 +621,17 @@
                                                 }
 
                                                 var rdfaValid = "";
+                                                var rdfaValidTable = "";
 
                                                 if (ErrorMessagesRdfa == undefined) {
                                                     rdfaValid = naSymbol;
+                                                    rdfaValidTable = naSymbol;
                                                 } else if (ErrorMessagesRdfa == "") {
                                                     rdfaValid = checkmark;
+                                                    rdfaValidTable = "All Valid";
                                                 } else {
                                                     rdfaValid = xSymbol + ' ' + ErrorCountRdfa;
+                                                    rdfaValidTable = "Errors Detected";
                                                 }
 
                                                 //Reset variables if they do not exist (i.e., there is no markup in this format, ergo we cannot list out the item properties and values)
@@ -671,6 +677,11 @@
                                                 $("#table0").removeClass("hide");
                                                 $("#maintable").append(newTR);
                                                 $('[data-toggle="tooltip"]').tooltip()
+
+                                                //Table for Exporting CSV
+                                                var newTableTR = '<tr class="active">' + '<td class="url-td"><a href="' + URLs[i] + '" title="' + URLs[i] + '" target="_blank" data-toggle="tooltip" data-placement="top">' + URLs[i] + '</a></td>' + '<td>' + testStatus + '</td>' + '<td>' + jsonValidTable + '</a></td>' + '<td>' + microdataValidTable + '</a></td>' + '<td>' + rdfaValidTable + '</a></td>' + '<td>' + microformatValidTable + '</a></td>' + '</tr>';
+
+                                                $("#structuredDataTable").append(newTableTR);
 
                                                 //hide loading bar, by adding a hide CSS class
                                                 $("#loading").addClass('hide');
